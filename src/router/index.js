@@ -17,7 +17,7 @@ const routes = [
       if (currentUser) {
         return '/chats'
       }
-      return '/users'
+      return '/login'
     }
   },
   {
