@@ -1,4 +1,5 @@
 # quik-messenger
+A Vue Based Chat App Implemented with Firebase!
 
 ## Project setup
 ```
