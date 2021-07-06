@@ -11,6 +11,17 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '',
+    name: 'Home',
+    redirect: () => {
+      const currentUser = store.getters.currentUser;
+      if (currentUser) {
+        return '/chats'
+      }
+      return '/users'
+    }
+  },
+  {
+    path: '',
     name: 'UnAuth',
     component: UnAuth,
     children: [
