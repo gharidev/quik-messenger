@@ -4,7 +4,7 @@
       class="message"
       v-for="(message, index) in messages"
       v-bind:key="message.id"
-      :class="{ own: message.userId == $store.getters.currentUser.uid }"
+      :class="{ own: message.userId == currentUser.uid }"
     >
       <div class="text-uppercase text-center">
         <v-chip
@@ -30,19 +30,20 @@
         </div>
       </template>
       <div style="margin-top: 5px"></div>
-      <div class="content">
-        <div>
-          {{ message.content }}
-        </div>
-        <!-- <chat-image
-          v-if="message.image"
-          :imgsrc="message.image"
-          @imageLoad="imageLoad"
-        ></chat-image> -->
+      <v-card elevation="2" class="content" color="primary" dark>
+        {{ message.content }}
         <div class="text-caption blue-grey--text text-right">
           {{ convertTime(message.created) }}
         </div>
-      </div>
+      </v-card>
+      <!-- <div class="content primary white--text">
+        <div>
+          {{ message.content }}
+        </div>
+        <div class="text-caption blue-grey--text text-right">
+          {{ convertTime(message.created) }}
+        </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -50,6 +51,7 @@
 <script>
 import moment from "moment";
 import { VChip } from "vuetify/lib";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {};
@@ -66,10 +68,14 @@ export default {
     messages() {
       return this.room.messages;
     },
+    ...mapGetters(["currentUser"]),
   },
   methods: {
     isFromSameDay(previous, current) {
-      return moment(new Date(current*1000)).isSame(moment(new Date(previous*1000)).startOf("day"), "d");
+      return moment(new Date(current * 1000)).isSame(
+        moment(new Date(previous * 1000)).startOf("day"),
+        "d"
+      );
     },
     imageLoad() {
       // this.$emit('imageLoad')
@@ -83,7 +89,7 @@ export default {
     },
     getUsernameFromMessage(message) {
       const userId = message.userId;
-      const currentUser = this.$store.getters.currentUser;
+      const currentUser = this.getters.currentUser;
       if (userId == currentUser.uid) {
         return currentUser.displayName;
       } else {

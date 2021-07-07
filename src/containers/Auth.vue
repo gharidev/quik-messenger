@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
+    <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -29,7 +29,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </v-app-bar>
+    </v-app-bar> -->
 
     <keep-alive>
       <router-view />
@@ -37,13 +37,50 @@
   </v-app>
 </template>
 <script>
-import { auth } from "../db";
+import { db } from "../db";
 export default {
   name: "Auth",
-  methods: {
-    async logout() {
-      await auth.signOut();
-    },
+  created() {
+    this.$store.dispatch("bindChats", this.$store);
+    this.unwatch = this.$store.watch(
+      (_, getters) => getters.chats,
+      (chats) => {
+        if (!chats) return;
+        const userIds = chats.map((chat) => {
+          return chat.users.find(
+            (u) => u != this.$store.getters.currentUser.uid
+          );
+        });
+        let chatUsers = {};
+        if (userIds.length == 0) return;
+        const prevUserIds = Object.values(this.$store.state.chatUsers).map(
+          (u) => u.uid
+        );
+        console.log("Previous", prevUserIds);
+        if (prevUserIds.length > 0) {
+          const difference = prevUserIds.filter((u) => !userIds.includes(u));
+          console.log("Difference", difference);
+          if (difference == 0) return;
+        }
+        db.collection("users")
+          .where("uid", "in", userIds)
+          .get()
+          .then((users) => {
+            users.docs.forEach((user) => {
+              chats.forEach((chat) => {
+                if (chat.users.includes(user.data().uid))
+                  chatUsers[chat.id] = user.data();
+              });
+              this.$store.state.chatUsers = chatUsers;
+            });
+            console.log("Chat Users", chatUsers);
+          });
+      }
+    );
+  },
+  beforeDestroy() {
+    this.$store.dispatch("unbindChats");
+    this.unwatch();
   },
 };
 </script>

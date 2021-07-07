@@ -15,15 +15,18 @@
           :error-messages="emailErrors"
           @input="$v.email.$touch()"
           @blur="$v.email.$touch()"
+          @keyup.enter="() => $refs.password.focus()"
         ></v-text-field>
         <v-text-field
           label="Password"
           placeholder="Enter Password"
+          ref="password"
           v-model="password"
           type="password"
           :error-messages="passwordErrors"
           @input="$v.password.$touch()"
           @blur="$v.password.$touch()"
+          @keyup.enter="login"
         ></v-text-field>
         <v-btn
           color="success"

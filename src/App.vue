@@ -39,14 +39,26 @@ export default {
 };
 </script>
 <style>
-::-webkit-scrollbar {
+html {
+  overflow: hidden;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  /* overflow-y: hidden; */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+}
+/* ::-webkit-scrollbar {
   width: 10px;
   opacity: 0.5;
 }
-/* ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
-} */
-/* ::-webkit-scrollbar-thumb {
+}
+::-webkit-scrollbar-thumb {
   background: var(--primary);
 } */
 </style>

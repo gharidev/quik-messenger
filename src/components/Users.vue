@@ -8,38 +8,38 @@
 </template>
 <script>
 import { db, Timestamp } from "../db";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       users: [],
     };
   },
-  props: ["chats"],
   computed: {
-    currentUser() {
-      return this.$store.getters.currentUser;
-    },
     filteredUsers() {
       return this.users.filter((u) => u.uid != this.currentUser.uid);
     },
+    ...mapGetters(["chats", "currentUser"]),
   },
   methods: {
     startChat(user) {
       if (user.uid == this.currentUser.uid) return;
-      const chats = this.chats.filter((c) => c.users.includes(user.id));
-      if (chats.length == 0) {
+      const chat = this.chats.find((c) => c.users.includes(user.uid));
+      console.log("Chat", chat);
+      if (!chat) {
         db.collection("chats")
           .add({
             users: [this.currentUser.uid, user.uid],
             personal: true,
             messages: [],
             created: Timestamp.now(),
+            updated: Timestamp.now(),
           })
           .then((data) => {
-            this.$router.push("/chat/" + data.id);
+            this.$router.push("chat/" + data.id);
           });
       } else {
-        this.$router.push("/chat/" + chats[0].id);
+        this.$router.push("chat/" + chat.id);
       }
     },
   },

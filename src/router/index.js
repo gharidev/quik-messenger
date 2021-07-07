@@ -58,16 +58,21 @@ const routes = [
         meta: {
           requiresUser: true
         },
+        children: [
+          {
+            path: ':id',
+            name: 'Chat',
+            component: () => import('../views/Chat.vue'),
+            meta: {
+              requiresUser: true
+            }
+          },
+        ]
       },
-      {
-        path: 'chat/:id',
-        name: 'Chat',
-        component: () => import('../views/Chat.vue'),
-        meta: {
-          requiresUser: true
-        },
-      }
-    ]
+    ],
+    meta: {
+      requiresUser: true
+    }
   }
 ]
 

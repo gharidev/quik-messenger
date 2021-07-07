@@ -1,13 +1,16 @@
 <template>
   <div>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar color="primary" dark tag="div" elevation="0" id="chat-appbar">
       <div class="d-flex align-center" v-if="user">
+        <!-- <v-btn icon>
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn> -->
         <v-img
           :alt="user.displayName"
           class="shrink mr-2 app-bar-user-pic"
           contain
           :src="require('../assets/profile_placeholder.png')"
-          transition="scale-transition"
+          transition="fade-transition"
           width="40"
         />
         <span class="shrink mt-1 text-h6">{{ user.displayName }} </span>
@@ -21,10 +24,9 @@
         /> -->
       </div>
     </v-app-bar>
-    <v-main class="chat-background primary lighten-4">
-      <div class="d-flex flex-column">
-        <div class="message-container">
-          <!-- <v-list v-if="chatRoom">
+    <div class="chat-background">
+      <div class="message-container">
+        <!-- <v-list v-if="chatRoom">
           <v-list-group
             v-for="message in chatRoom.messages"
             :key="message.id"
@@ -32,54 +34,56 @@
             >{{ message.content }}
           </v-list-group>
         </v-list> -->
-          <div
-            class="chat-container"
-            v-on:scroll="onScroll"
-            ref="chatContainer"
-            :style="{
-              height: 'calc((var(--vh, 1vh)*100) - ' + paddingHeight + 'px)',
-            }"
-          >
-            <message :room="chatRoom" :user="user" v-if="chatRoom"></message>
-          </div>
+        <div
+          class="chat-container"
+          v-on:scroll="onScroll"
+          ref="chatContainer"
+          :style="{
+            height: 'calc((var(--vh, 1vh)*100) - ' + paddingHeight + 'px)',
+          }"
+        >
+          <message :room="chatRoom" :user="user" v-if="chatRoom"></message>
         </div>
       </div>
-      <div class="chat-input-container">
-        <v-col class="d-flex align-center">
-          <v-text-field
-            type="text"
-            placeholder="Type here..."
-            outlined
-            v-on:keyup.enter="sendMessage"
-            v-model="message"
-            hide-details="auto"
-          ></v-text-field>
-          <v-btn
-            icon
-            class="mx-4"
-            color="primary"
-            :disabled="!message"
-            @click="sendMessage"
-          >
-            <v-icon>mdi-send</v-icon>
-          </v-btn>
-          <!-- <v-btn icon class="blue--text emoji-panel" @click="toggleEmojiPanel">
+    </div>
+    <div class="chat-input-container primary">
+      <div class="d-flex align-center py-2 px-3">
+        <v-text-field
+          type="text"
+          placeholder="Type here..."
+          outlined
+          @keyup.enter="sendMessage"
+          v-model="message"
+          hide-details="auto"
+          dark
+          class="primary lighten-2 white--text"
+          ref="chatInput"
+        ></v-text-field>
+        <v-btn
+          fab
+          dark
+          class="mx-4 lighten-4"
+          color="primary"
+          :disabled="!message"
+          @click="sendMessage"
+        >
+          <v-icon>mdi-send</v-icon>
+        </v-btn>
+        <!-- <v-btn icon class="blue--text emoji-panel" @click="toggleEmojiPanel">
             <v-icon>mdi-emoticon-outline</v-icon>
           </v-btn> -->
-        </v-col>
       </div>
-    </v-main>
+    </div>
   </div>
 </template>
 <script>
 import { db, Timestamp, FieldValue } from "../db";
 import Message from "../components/Messages.vue";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       message: "",
-      chatRoom: null,
-      user: null,
       paddingHeight: 120,
     };
   },
@@ -89,10 +93,12 @@ export default {
   methods: {
     sendMessage() {
       let message = this.message;
+      if (!message) return;
       console.log(this.chatRoom);
       db.collection("chats")
         .doc(this.chatRoom.id)
         .update({
+          updated: Timestamp.now(),
           messages: FieldValue.arrayUnion({
             content: message,
             type: "text",
@@ -101,12 +107,24 @@ export default {
           }),
         });
       this.message = "";
+      this.$nextTick(() => {
+        this.$refs.chatInput.focus();
+      });
     },
     onScroll() {},
-    scrollToBottom() {
+    scrollToBottom(ease = true) {
       this.$nextTick(() => {
         const container = this.$refs.chatContainer;
-        container.scrollTop = container.scrollHeight;
+        if (container.scrollTop == 0) ease = false;
+        if (ease)
+          this.$vuetify
+            .goTo(".message:last-child", {
+              container: this.$refs.chatContainer,
+            })
+            .then(console.log);
+        else {
+          container.scrollTop = container.scrollHeight;
+        }
       });
     },
     setCssHeightVar() {
@@ -114,9 +132,7 @@ export default {
       document.documentElement.style.setProperty("--vh", `${vh}px`);
     },
     setChatContainerConstraints() {
-      const appBarHeight = document.querySelector(
-        ".v-application header"
-      ).offsetHeight;
+      const appBarHeight = document.querySelector("#chat-appbar").offsetHeight;
       const bottomBarHeight = document.querySelector(
         ".chat-input-container"
       ).offsetHeight;
@@ -128,46 +144,32 @@ export default {
     },
   },
   computed: {
-    currentUser() {
-      return this.$store.getters.currentUser;
+    ...mapGetters(["currentUser"]),
+    user() {
+      return this.$store.getters.chatUsers[this.chatId];
+    },
+    chatId() {
+      return this.$route.params.id;
+    },
+    chatRoom() {
+      return this.$store.getters.chats.find((c) => c.id == this.chatId);
     },
   },
   watch: {
     chatRoom: {
       immediate: true,
-      handler(val) {
-        console.log("Changed chatroom");
-        console.log(val);
+      handler() {
         this.scrollToBottom();
-        if (val) {
-          if (this.user && this.user.uid == this.$route.params.id) return;
-          this.$bind(
-            "user",
-            db
-              .collection("users")
-              .doc(val.users.filter((u) => u != this.currentUser.uid)[0])
-          );
-        }
       },
     },
-    $route(val) {
-      console.log("Route Changed", val);
-      if (this.chatRoom) this.$unbind("chatRoom");
-      this.$bind("chatRoom", db.collection("chats").doc(val.params.id));
-    },
-  },
-  created() {
-    this.$bind("chatRoom", db.collection("chats").doc(this.$route.params.id));
   },
   mounted() {
     this.setCssHeightVar();
     this.setChatContainerConstraints();
     window.addEventListener("resize", this.onResize, false);
-    document.querySelector("body").style.overflow = "hidden";
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize, false);
-    document.querySelector("body").style.overflow = "auto";
   },
 };
 </script>
@@ -177,9 +179,9 @@ export default {
   height: 90vh;
 }
 .chat-background {
-  position: fixed;
+  position: relative;
   width: 100%;
-  background: url(../assets/background.svg);
+  background: url(../assets/background.svg) center;
 }
 .chat-container {
   box-sizing: border-box;
@@ -193,7 +195,7 @@ export default {
   }
   .content {
     padding: 2px 8px;
-    background-color: lightgreen;
+    // background-color: lightgreen;
     min-width: 10%;
     border-radius: 10px;
     display: inline-block;
@@ -202,22 +204,19 @@ export default {
     max-width: 50%;
     word-wrap: break-word;
   }
+  .message {
+    margin-bottom: 3px;
+  }
+  .message.own {
+    text-align: right;
+  }
 }
 .chat-input-container {
-  background-color: white;
-  position: fixed;
+  // background-color: white;
+  position: relative;
   width: 100%;
   bottom: 0;
   left: 0;
-}
-.message {
-  margin-bottom: 3px;
-}
-.message.own {
-  text-align: right;
-  .content {
-    background-color: lightskyblue;
-  }
 }
 @media (max-width: 480px) {
   .chat-container .content {
