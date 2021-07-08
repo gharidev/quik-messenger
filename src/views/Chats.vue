@@ -19,7 +19,7 @@
               transition="scale-transition"
               width="40"
             />
-            <v-app-bar-title>Quik Messenger</v-app-bar-title>
+            <v-app-bar-title shrink-on-scroll>Quik Messenger</v-app-bar-title>
 
             <v-spacer></v-spacer>
 
@@ -41,26 +41,28 @@
             </v-menu>
           </v-app-bar>
           <v-card style="height: 100%" color="transparent">
-            <v-list class="pa-0 transparent" rounded>
+            <v-list class="pa-0 transparent">
               <v-list-item-group active-class="border" color="dark">
-                <v-list-item
-                  v-for="chat in chats"
-                  :key="chat.id"
-                  @click="openChat(chat)"
-                  class="py-1"
-                >
-                  <v-list-item-avatar>
-                    <v-img
-                      :alt="`${getUserNameFromId(chat.id)} Avatar`"
-                      :src="require('../assets/profile_placeholder.png')"
-                    ></v-img>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      getUserNameFromId(chat.id)
-                    }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
+                <template v-for="chat in filteredChats">
+                  <v-list-item
+                    :key="chat.id"
+                    @click="openChat(chat)"
+                    class="py-1"
+                  >
+                    <v-list-item-avatar>
+                      <v-img
+                        :alt="`${getUserNameFromId(chat.id)} Avatar`"
+                        :src="require('../assets/profile_placeholder.png')"
+                      ></v-img>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title>{{
+                        getUserNameFromId(chat.id)
+                      }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider class="mr-2" :key="chat.id + 'divider'" inset></v-divider>
+                </template>
               </v-list-item-group>
             </v-list>
           </v-card>
@@ -109,6 +111,7 @@
 import { auth } from "../db";
 import { mapGetters, mapState } from "vuex";
 import Welcome from "../components/Welcome.vue";
+import { VDivider } from "vuetify/lib";
 export default {
   data() {
     return {
@@ -117,13 +120,14 @@ export default {
   },
   components: {
     Welcome,
+    VDivider,
   },
   computed: {
-    currentUser() {
-      return this.$store.getters.currentUser;
-    },
-    ...mapGetters(["chats"]),
+    ...mapGetters(["chats", "currentUser"]),
     ...mapState(["chatUsers"]),
+    filteredChats() {
+      return this.chats.filter((c) => c.messages.length > 0);
+    },
   },
   methods: {
     getUserNameFromId(chatId) {

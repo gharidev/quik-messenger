@@ -2,14 +2,16 @@
   <v-container>
     <v-row justify="center" align="center">
       <v-col cols="12">
-        <h1 class="display-2 font-weight-bold mb-3 text-center">
+        <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
           Get Started!
-        </h1>
+        </h1> -->
+        <welcome></welcome>
         <h6 class="text-center font-weight-bold text-h6">Register</h6>
       </v-col>
       <v-col cols="12" md="4" class="text-center">
         <v-form @submit.prevent="register">
           <v-text-field
+            outlined
             label="Name"
             placeholder="Enter Name"
             v-model="name"
@@ -18,6 +20,7 @@
             @blur="$v.name.$touch()"
           ></v-text-field>
           <v-text-field
+            outlined
             label="Email"
             placeholder="Enter Email"
             v-model="email"
@@ -26,6 +29,7 @@
             @blur="$v.email.$touch()"
           ></v-text-field>
           <v-text-field
+            outlined
             label="Password"
             placeholder="Enter Password"
             v-model="password"
@@ -55,6 +59,7 @@
 <script>
 import { auth, db } from "../db";
 import { required, minLength, email } from "vuelidate/lib/validators";
+import Welcome from "../components/Auth/Welcome.vue";
 export default {
   name: "Register",
   data() {
@@ -64,6 +69,9 @@ export default {
       password: "",
       loading: false,
     };
+  },
+  components: {
+    Welcome,
   },
   validations: {
     name: {

@@ -5,7 +5,7 @@
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <template v-if="!showSearch">
-        <v-app-bar-title>Users</v-app-bar-title>
+        <v-app-bar-title shrink-on-scroll>Users</v-app-bar-title>
         <v-spacer></v-spacer>
       </template>
       <v-text-field
@@ -17,27 +17,25 @@
         ref="searchInput"
       ></v-text-field>
       <v-btn icon @click="showSearch = !showSearch">
-        <v-icon>mdi-magnify</v-icon>
+        <v-icon>{{ showSearch ? "mdi-close" : "mdi-magnify" }}</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-list class="pa-0 transparent" rounded>
+    <v-list class="pa-0 transparent">
       <v-list-item-group active-class="border" color="dark">
-        <v-list-item
-          v-for="user in filteredUsers"
-          :key="user.uid"
-          @click="startChat(user)"
-          class="py-1"
-        >
-          <v-list-item-avatar>
-            <v-img
-              :alt="`${user.displayName} Avatar`"
-              :src="require('../assets/profile_placeholder.png')"
-            ></v-img>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>{{ user.displayName }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <template v-for="user in filteredUsers">
+          <v-list-item :key="user.uid" @click="startChat(user)" class="py-1">
+            <v-list-item-avatar>
+              <v-img
+                :alt="`${user.displayName} Avatar`"
+                :src="require('../assets/profile_placeholder.png')"
+              ></v-img>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{ user.displayName }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider class="mr-2" :key="user.uid + 'divider'" inset></v-divider>
+        </template>
       </v-list-item-group>
     </v-list>
   </div>

@@ -1,7 +1,11 @@
 <template>
   <div>
     <router-view></router-view>
-    <loader v-if="$store.state.authLoading"></loader>
+    <v-app>
+      <v-fade-transition>
+        <loader v-if="$store.state.authLoading"></loader>
+      </v-fade-transition>
+    </v-app>
   </div>
 </template>
 

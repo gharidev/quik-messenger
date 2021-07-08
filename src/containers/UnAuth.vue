@@ -13,7 +13,7 @@
         <span class="shrink mt-1 text-h6">Quik Messenger</span>
       </div>
     </v-app-bar>
-    <v-main>
+    <v-main class="primary lighten-4">
       <v-container>
         <keep-alive>
           <router-view></router-view>

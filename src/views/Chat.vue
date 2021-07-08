@@ -1,5 +1,5 @@
 <template>
-  <div @contextmenu="onContextMenu" @resize="onResize">
+  <div @contextmenu="onContextMenu">
     <v-app-bar color="primary" dark tag="div" elevation="0" class="chat-appbar">
       <div class="d-flex align-center" v-if="user">
         <v-btn icon class="back-button d-sm-none" @click="onBackButton">
@@ -13,7 +13,7 @@
           transition="fade-transition"
           width="40"
         />
-        <v-app-bar-title>{{ user.displayName }}</v-app-bar-title>
+        <v-app-bar-title shrink-on-scroll>{{ user.displayName }}</v-app-bar-title>
         <!-- <v-img
           alt="Vuetify Name"
           class="shrink mt-1 hidden-sm-and-down"
@@ -132,8 +132,7 @@ export default {
           this.$vuetify
             .goTo(".message:last-child", {
               container: this.$refs.chatContainer,
-            })
-            .then(console.log);
+            });
         else {
           container.scrollTop = container.scrollHeight;
         }
@@ -191,6 +190,10 @@ export default {
   mounted() {
     this.setCssHeightVar();
     this.setChatContainerConstraints();
+    window.addEventListener("resize", this.onResize, false);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.onResize, false);
   },
 };
 </script>

@@ -2,7 +2,7 @@
     <v-card class="fill-height d-flex align-center flex-column justify-center" color="transparent" elevation="0">
         <v-img
             alt="Vuetify Logo"
-            class="shrink mr-2"
+            class="shrink"
             contain
             src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
             transition="scale-transition"

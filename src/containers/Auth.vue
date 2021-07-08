@@ -60,7 +60,7 @@ export default {
         );
         console.log("Previous", prevUserIds);
         if (prevUserIds.length > 0) {
-          const difference = prevUserIds.filter((u) => !userIds.includes(u));
+          const difference = userIds.filter((u) => !prevUserIds.includes(u));
           console.log("Difference", difference);
           if (difference == 0) return;
         }

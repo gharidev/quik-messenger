@@ -2,13 +2,15 @@
   <v-container>
     <v-row justify="center" align="center">
       <v-col cols="12">
-        <h1 class="display-2 font-weight-bold mb-3 text-center">
+        <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
           Get Started!
-        </h1>
+        </h1> -->
+        <welcome></welcome>
         <h6 class="text-center font-weight-bold text-h6">Login</h6>
       </v-col>
       <v-col cols="12" md="4" class="text-center">
         <v-text-field
+          outlined
           label="Email"
           placeholder="Enter Email"
           v-model="email"
@@ -18,6 +20,7 @@
           @keyup.enter="() => $refs.password.focus()"
         ></v-text-field>
         <v-text-field
+          outlined
           label="Password"
           placeholder="Enter Password"
           ref="password"
@@ -48,6 +51,7 @@
 <script>
 import { auth } from "../db";
 import { required, minLength, email } from "vuelidate/lib/validators";
+import Welcome from "../components/Auth/Welcome.vue";
 export default {
   name: "Login",
   data() {
@@ -56,6 +60,9 @@ export default {
       password: "",
       loading: false,
     };
+  },
+  components: {
+    Welcome,
   },
   validations: {
     password: {
