@@ -11,17 +11,15 @@
           :class="{ 'd-none': $route.name != 'Chats' }"
         >
           <v-app-bar color="primary" dark elevation="0" tag="div">
-            <div class="d-flex align-center">
-              <v-img
-                alt="Vuetify Logo"
-                class="shrink mr-2"
-                contain
-                src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-                transition="scale-transition"
-                width="40"
-              />
-              <span class="shrink mt-1 text-subtitle-1">Quik Messenger</span>
-            </div>
+            <v-img
+              alt="Vuetify Logo"
+              class="shrink mr-2"
+              contain
+              src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+              transition="scale-transition"
+              width="40"
+            />
+            <v-app-bar-title>Quik Messenger</v-app-bar-title>
 
             <v-spacer></v-spacer>
 
@@ -33,7 +31,7 @@
               </template>
 
               <v-list>
-                <v-list-item @click="() => {}">
+                <v-list-item @click="$router.push({ name: 'Users' })">
                   <v-list-item-title>New Chat</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="logout">
@@ -42,39 +40,50 @@
               </v-list>
             </v-menu>
           </v-app-bar>
-          <v-list class="pa-0 transparent" rounded>
-            <v-list-item-group active-class="border" color="dark">
-              <v-list-item
-                v-for="chat in chats"
-                :key="chat.id"
-                @click="openChat(chat)"
-                class="py-1"
-              >
-                <v-list-item-avatar>
-                  <v-img
-                    :alt="`${getUserNameFromId(chat.id)} Avatar`"
-                    :src="require('../assets/profile_placeholder.png')"
-                  ></v-img>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    getUserNameFromId(chat.id)
-                  }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
+          <v-card style="height: 100%" color="transparent">
+            <v-list class="pa-0 transparent" rounded>
+              <v-list-item-group active-class="border" color="dark">
+                <v-list-item
+                  v-for="chat in chats"
+                  :key="chat.id"
+                  @click="openChat(chat)"
+                  class="py-1"
+                >
+                  <v-list-item-avatar>
+                    <v-img
+                      :alt="`${getUserNameFromId(chat.id)} Avatar`"
+                      :src="require('../assets/profile_placeholder.png')"
+                    ></v-img>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>{{
+                      getUserNameFromId(chat.id)
+                    }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="8"
+          md="9"
+          xl="10"
+          :class="[$route.name == 'Chats' ? 'd-none' : 'd-sm-block']"
+        >
+          <keep-alive>
+            <router-view></router-view>
+          </keep-alive>
         </v-col>
         <v-col
           sm="8"
           md="9"
           xl="10"
-          class="d-sm-block"
-          :class="{ 'd-none': $route.name != 'Chat' }"
+          class="d-none d-sm-block"
+          v-if="$route.name == 'Chats'"
         >
-          <keep-alive>
-            <router-view></router-view>
-          </keep-alive>
+          <welcome></welcome>
         </v-col>
       </v-row>
       <!-- <h1>Chats</h1>
@@ -99,6 +108,7 @@
 // import Users from "../components/Users.vue";
 import { auth } from "../db";
 import { mapGetters, mapState } from "vuex";
+import Welcome from "../components/Welcome.vue";
 export default {
   data() {
     return {
@@ -106,7 +116,7 @@ export default {
     };
   },
   components: {
-    // Users,
+    Welcome,
   },
   computed: {
     currentUser() {
@@ -120,7 +130,15 @@ export default {
       return this.chatUsers[chatId]?.displayName;
     },
     openChat(chat) {
-      this.$router.push({ name: "Chat", params: { id: chat.id, data: chat } });
+      const params = {
+        name: "Chat",
+        params: { id: chat.id, data: chat },
+      };
+      this.$router.push(params);
+      // if (this.$route.name == "Chat") {
+      //   this.$router.replace(params);
+      //   return;
+      // }
     },
     async logout() {
       await auth.signOut();

@@ -1,6 +1,7 @@
 <template>
-  <v-app>
-    <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
+  <div @contextmenu="(e)=>e.preventDefault()">
+    <v-app>
+      <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -31,10 +32,11 @@
       </v-menu>
     </v-app-bar> -->
 
-    <keep-alive>
-      <router-view />
-    </keep-alive>
-  </v-app>
+      <keep-alive>
+        <router-view />
+      </keep-alive>
+    </v-app>
+  </div>
 </template>
 <script>
 import { db } from "../db";

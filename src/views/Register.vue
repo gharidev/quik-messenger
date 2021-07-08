@@ -30,12 +30,13 @@
             placeholder="Enter Password"
             v-model="password"
             type="password"
+            autocomplete="off"
             :error-messages="passwordErrors"
             @input="$v.password.$touch()"
             @blur="$v.password.$touch()"
           ></v-text-field>
           <v-btn
-            color="success"
+            color="primary"
             :disabled="$v.$invalid || loading"
             type="submit"
             :loading="loading"
@@ -44,7 +45,7 @@
         </v-form>
         <p class="mt-3">
           Already have an account?
-          <router-link to="/login">Login</router-link>
+          <router-link to="/login" replace>Login</router-link>
         </p>
       </v-col>
     </v-row>

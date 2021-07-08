@@ -60,6 +60,14 @@ const routes = [
         },
         children: [
           {
+            path: 'users',
+            name: 'Users',
+            component: () => import('../components/Users.vue'),
+            meta: {
+              requiresUser: true
+            }
+          },
+          {
             path: ':id',
             name: 'Chat',
             component: () => import('../views/Chat.vue'),

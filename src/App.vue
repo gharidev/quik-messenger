@@ -51,14 +51,16 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
 }
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
-  opacity: 0.5;
+  height: 10px;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
-} */
+  background: rgba(90, 90, 90);
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
 </style>

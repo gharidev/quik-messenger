@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <v-app-bar color="primary" dark tag="div" elevation="0" id="chat-appbar">
+  <div @contextmenu="onContextMenu" @resize="onResize">
+    <v-app-bar color="primary" dark tag="div" elevation="0" class="chat-appbar">
       <div class="d-flex align-center" v-if="user">
-        <!-- <v-btn icon>
+        <v-btn icon class="back-button d-sm-none" @click="onBackButton">
           <v-icon>mdi-arrow-left</v-icon>
-        </v-btn> -->
+        </v-btn>
         <v-img
           :alt="user.displayName"
           class="shrink mr-2 app-bar-user-pic"
@@ -13,7 +13,7 @@
           transition="fade-transition"
           width="40"
         />
-        <span class="shrink mt-1 text-h6">{{ user.displayName }} </span>
+        <v-app-bar-title>{{ user.displayName }}</v-app-bar-title>
         <!-- <v-img
           alt="Vuetify Name"
           class="shrink mt-1 hidden-sm-and-down"
@@ -42,7 +42,7 @@
             height: 'calc((var(--vh, 1vh)*100) - ' + paddingHeight + 'px)',
           }"
         >
-          <message :room="chatRoom" :user="user" v-if="chatRoom"></message>
+          <messages :room="chatRoom" :user="user" v-if="chatRoom"></messages>
         </div>
       </div>
     </div>
@@ -58,6 +58,7 @@
           dark
           class="primary lighten-2 white--text"
           ref="chatInput"
+          autocomplete="off"
         ></v-text-field>
         <v-btn
           fab
@@ -74,21 +75,32 @@
           </v-btn> -->
       </div>
     </div>
+    <context-menu
+      :config="contextMenu"
+      @visibilityChanged="(v) => (contextMenu.show = v)"
+    ></context-menu>
   </div>
 </template>
 <script>
 import { db, Timestamp, FieldValue } from "../db";
-import Message from "../components/Messages.vue";
+import Messages from "../components/Chat/Messages.vue";
+import ContextMenu from "../components/Chat/ContextMenu.vue";
 import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       message: "",
       paddingHeight: 120,
+      contextMenu: {
+        show: false,
+        x: 0,
+        y: 0,
+      },
     };
   },
   components: {
-    Message,
+    Messages,
+    ContextMenu,
   },
   methods: {
     sendMessage() {
@@ -132,7 +144,7 @@ export default {
       document.documentElement.style.setProperty("--vh", `${vh}px`);
     },
     setChatContainerConstraints() {
-      const appBarHeight = document.querySelector("#chat-appbar").offsetHeight;
+      const appBarHeight = document.querySelector(".chat-appbar").offsetHeight;
       const bottomBarHeight = document.querySelector(
         ".chat-input-container"
       ).offsetHeight;
@@ -141,6 +153,19 @@ export default {
     onResize() {
       this.setCssHeightVar();
       this.scrollToBottom();
+    },
+    onBackButton() {
+      this.$router.back();
+    },
+    onContextMenu(e) {
+      e.preventDefault();
+      const menu = this.contextMenu;
+      menu.show = false;
+      menu.x = e.clientX;
+      menu.y = e.clientY;
+      this.$nextTick(() => {
+        menu.show = true;
+      });
     },
   },
   computed: {
@@ -166,14 +191,19 @@ export default {
   mounted() {
     this.setCssHeightVar();
     this.setChatContainerConstraints();
-    window.addEventListener("resize", this.onResize, false);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onResize, false);
   },
 };
 </script>
 <style lang="scss">
+@media (max-width: 600px) {
+  .chat-appbar .v-toolbar__content {
+    padding-left: 0;
+    .back-button {
+      width: 30px !important;
+      height: 30px !important;
+    }
+  }
+}
 .scrollable {
   overflow-y: auto;
   height: 90vh;

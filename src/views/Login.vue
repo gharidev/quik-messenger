@@ -23,13 +23,14 @@
           ref="password"
           v-model="password"
           type="password"
+          autocomplete="off"
           :error-messages="passwordErrors"
           @input="$v.password.$touch()"
           @blur="$v.password.$touch()"
           @keyup.enter="login"
         ></v-text-field>
         <v-btn
-          color="success"
+          color="primary"
           :disabled="$v.$invalid || loading"
           @click="login"
           :loading="loading"
@@ -37,7 +38,7 @@
         >
         <p class="mt-3">
           Does't have an account?
-          <router-link to="/register">Register</router-link>
+          <router-link to="/register" replace>Register</router-link>
         </p>
       </v-col>
     </v-row>
