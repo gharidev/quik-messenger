@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <router-view></router-view>
+  <div @contextmenu="(e) => e.preventDefault()">
     <v-app>
+      <router-view></router-view>
       <v-fade-transition>
         <loader v-if="$store.state.authLoading"></loader>
       </v-fade-transition>
@@ -11,60 +11,42 @@
 
 <script>
 import Loader from "./components/Loader.vue";
+import { loadStyle } from "./utils";
 export default {
   name: "App",
 
   data: () => ({}),
   components: { Loader },
   methods: {
-    loadStyle(css) {
-      var style =
-        document.querySelector('style[id="lastinbody"]') ||
-        document.createElement("style");
-      style.id = "lastinbody";
-      style.type = "text/css";
-      if (style.styleSheet) {
-        style.styleSheet.cssText = css;
-      } else {
-        style.appendChild(document.createTextNode(css));
-      }
-      document.querySelector("body").appendChild(style);
+    setCssHeightVar() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
     },
   },
   created() {
-    console.log(this.$vuetify.theme.themes.light.primary);
-    this.loadStyle(
+    loadStyle(
       `::-webkit-scrollbar-thumb {
-        background: ${this.$vuetify.theme.themes.light.primary};
-        border-radius: 10px;
-      }`
+  background: ${this.$vuetify.theme.themes.light.primary};
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: ${this.$vuetify.theme.themes.light.primary}50;
+}`,
+      "custom-scroll-bar"
     );
+  },
+  mounted() {
+    this.setCssHeightVar();
+    window.addEventListener("resize", this.setCssHeightVar, false);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.setCssHeightVar, false);
   },
 };
 </script>
 <style>
-html {
-  overflow: hidden;
-}
-
-body {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  /* overflow-y: hidden; */
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: none;
-}
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(90, 90, 90);
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  width: 5px;
+  height: 5px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container fluid class="pa-0">
-      <v-row no-gutters class="primary lighten-4" style="height: 100vh">
+      <v-row no-gutters class="primary lighten-4 height-100">
         <v-col
           cols="12"
           sm="4"
@@ -40,12 +40,17 @@
               </v-list>
             </v-menu>
           </v-app-bar>
-          <v-card style="height: 100%" color="transparent">
+          <v-card
+            color="transparent"
+            elevation="0"
+            class="fixed-appbar-scroll-view"
+            outlined
+          >
             <v-list class="pa-0 transparent">
               <v-list-item-group active-class="border" color="dark">
-                <template v-for="chat in filteredChats">
+                <template v-for="(chat, index) in filteredChats">
                   <v-list-item
-                    :key="chat.id"
+                    :key="chat.id + index"
                     @click="openChat(chat)"
                     class="py-1"
                   >
@@ -61,12 +66,17 @@
                       }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-divider class="mr-2" :key="chat.id + 'divider'" inset></v-divider>
+                  <v-divider
+                    class="mr-2"
+                    :key="chat.id + 'divider' + index"
+                    inset
+                  ></v-divider>
                 </template>
               </v-list-item-group>
             </v-list>
           </v-card>
         </v-col>
+        <v-divider vertical class="d-none d-sm-block"></v-divider>
         <v-col
           cols="12"
           sm="8"
@@ -161,14 +171,11 @@ export default {
 };
 </script>
 <style>
-.new-chat-fab {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+.height-100 {
+  height: calc(var(--vh, 1vh) * 100);
 }
-.chat-list-user-pic {
-  height: 40px;
-  width: 40px;
-  border-radius: 40px;
+.fixed-appbar-scroll-view {
+  height: calc((var(--vh, 1vh) * 100) - 64px);
+  overflow-y: overlay;
 }
 </style>

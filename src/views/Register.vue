@@ -1,59 +1,57 @@
 <template>
-  <v-container>
-    <v-row justify="center" align="center">
-      <v-col cols="12">
-        <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
+  <v-row justify="center" align="center">
+    <v-col cols="12">
+      <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
           Get Started!
         </h1> -->
-        <welcome></welcome>
-        <h6 class="text-center font-weight-bold text-h6">Register</h6>
-      </v-col>
-      <v-col cols="12" md="4" class="text-center">
-        <v-form @submit.prevent="register">
-          <v-text-field
-            outlined
-            label="Name"
-            placeholder="Enter Name"
-            v-model="name"
-            :error-messages="nameErrors"
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
-          ></v-text-field>
-          <v-text-field
-            outlined
-            label="Email"
-            placeholder="Enter Email"
-            v-model="email"
-            :error-messages="emailErrors"
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
-          ></v-text-field>
-          <v-text-field
-            outlined
-            label="Password"
-            placeholder="Enter Password"
-            v-model="password"
-            type="password"
-            autocomplete="off"
-            :error-messages="passwordErrors"
-            @input="$v.password.$touch()"
-            @blur="$v.password.$touch()"
-          ></v-text-field>
-          <v-btn
-            color="primary"
-            :disabled="$v.$invalid || loading"
-            type="submit"
-            :loading="loading"
-            >Register</v-btn
-          >
-        </v-form>
-        <p class="mt-3">
-          Already have an account?
-          <router-link to="/login" replace>Login</router-link>
-        </p>
-      </v-col>
-    </v-row>
-  </v-container>
+      <welcome></welcome>
+      <h6 class="text-center font-weight-bold text-h6">Register</h6>
+    </v-col>
+    <v-col cols="12" md="4" class="text-center">
+      <v-form @submit.prevent="register">
+        <v-text-field
+          outlined
+          label="Name"
+          placeholder="Enter Name"
+          v-model="name"
+          :error-messages="nameErrors"
+          @input="$v.name.$touch()"
+          @blur="$v.name.$touch()"
+        ></v-text-field>
+        <v-text-field
+          outlined
+          label="Email"
+          placeholder="Enter Email"
+          v-model="email"
+          :error-messages="emailErrors"
+          @input="$v.email.$touch()"
+          @blur="$v.email.$touch()"
+        ></v-text-field>
+        <v-text-field
+          outlined
+          label="Password"
+          placeholder="Enter Password"
+          v-model="password"
+          type="password"
+          autocomplete="off"
+          :error-messages="passwordErrors"
+          @input="$v.password.$touch()"
+          @blur="$v.password.$touch()"
+        ></v-text-field>
+        <v-btn
+          color="primary"
+          :disabled="$v.$invalid || loading"
+          type="submit"
+          :loading="loading"
+          >Register</v-btn
+        >
+      </v-form>
+      <p class="mt-3">
+        Already have an account?
+        <router-link to="/login" replace>Login</router-link>
+      </p>
+    </v-col>
+  </v-row>
 </template>
 
 <script>

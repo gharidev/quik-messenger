@@ -1,18 +1,10 @@
 <template>
   <div class="loader-bg">
-    <div class="v-application">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </div>
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
   </div>
 </template>
 <script>
 export default {
-  created() {
-    console.log("Loader Created");
-  },
-  destroyed() {
-    console.log("Loader Desctroyed");
-  },
 };
 </script>
 <style>

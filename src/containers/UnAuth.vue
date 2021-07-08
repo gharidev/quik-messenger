@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
@@ -13,14 +13,14 @@
         <span class="shrink mt-1 text-h6">Quik Messenger</span>
       </div>
     </v-app-bar>
-    <v-main class="primary lighten-4">
+    <v-main class="primary lighten-4 scroll-container">
       <v-container>
         <keep-alive>
           <router-view></router-view>
         </keep-alive>
       </v-container>
     </v-main>
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -28,3 +28,9 @@ export default {
   name: "UnAuth",
 };
 </script>
+<style>
+.scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+}
+</style>

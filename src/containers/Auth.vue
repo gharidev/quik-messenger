@@ -1,7 +1,6 @@
 <template>
-  <div @contextmenu="(e)=>e.preventDefault()">
-    <v-app>
-      <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
+  <div>
+    <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -32,14 +31,14 @@
       </v-menu>
     </v-app-bar> -->
 
-      <keep-alive>
-        <router-view />
-      </keep-alive>
-    </v-app>
+    <keep-alive>
+      <router-view />
+    </keep-alive>
   </div>
 </template>
 <script>
 import { db } from "../db";
+import { loadStyle, unloadStyle } from "../utils";
 export default {
   name: "Auth",
   created() {
@@ -79,10 +78,30 @@ export default {
           });
       }
     );
+    loadStyle(
+      `html {
+  overflow: hidden;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+}`,
+      "scroll-limiter"
+    );
   },
   beforeDestroy() {
     this.$store.dispatch("unbindChats");
     this.unwatch();
+  },
+  destroyed() {
+    unloadStyle("scroll-limiter");
   },
 };
 </script>

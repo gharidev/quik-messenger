@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="height-100">
     <v-app-bar color="primary" dark tag="div" elevation="0">
       <v-btn icon class="back-button d-sm-none" @click="$router.back()">
         <v-icon>mdi-arrow-left</v-icon>
@@ -20,24 +20,34 @@
         <v-icon>{{ showSearch ? "mdi-close" : "mdi-magnify" }}</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-list class="pa-0 transparent">
-      <v-list-item-group active-class="border" color="dark">
-        <template v-for="user in filteredUsers">
-          <v-list-item :key="user.uid" @click="startChat(user)" class="py-1">
-            <v-list-item-avatar>
-              <v-img
-                :alt="`${user.displayName} Avatar`"
-                :src="require('../assets/profile_placeholder.png')"
-              ></v-img>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ user.displayName }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider class="mr-2" :key="user.uid + 'divider'" inset></v-divider>
-        </template>
-      </v-list-item-group>
-    </v-list>
+    <v-card
+      elevation="0"
+      class="fill-height fixed-appbar-scroll-view"
+      color="transparent"
+    >
+      <v-list class="pa-0" color="transparent">
+        <v-list-item-group active-class="border" color="dark">
+          <template v-for="user in filteredUsers">
+            <v-list-item :key="user.uid" @click="startChat(user)" class="py-1">
+              <v-list-item-avatar>
+                <v-img
+                  :alt="`${user.displayName} Avatar`"
+                  :src="require('../assets/profile_placeholder.png')"
+                ></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>{{ user.displayName }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider
+              class="mr-2"
+              :key="user.uid + 'divider'"
+              inset
+            ></v-divider>
+          </template>
+        </v-list-item-group>
+      </v-list>
+    </v-card>
   </div>
 </template>
 <script>

@@ -138,10 +138,6 @@ export default {
         }
       });
     },
-    setCssHeightVar() {
-      let vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
-    },
     setChatContainerConstraints() {
       const appBarHeight = document.querySelector(".chat-appbar").offsetHeight;
       const bottomBarHeight = document.querySelector(
@@ -150,8 +146,7 @@ export default {
       this.paddingHeight = appBarHeight + bottomBarHeight;
     },
     onResize() {
-      this.setCssHeightVar();
-      this.scrollToBottom();
+      this.scrollToBottom(false);
     },
     onBackButton() {
       this.$router.back();
@@ -188,7 +183,6 @@ export default {
     },
   },
   mounted() {
-    this.setCssHeightVar();
     this.setChatContainerConstraints();
     window.addEventListener("resize", this.onResize, false);
   },
