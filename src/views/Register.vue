@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { auth, db } from "../db";
+import { auth, rtdb } from "../db";
 import { required, minLength, email } from "vuelidate/lib/validators";
 import Welcome from "../components/UnAuth/Welcome.vue";
 export default {
@@ -101,7 +101,7 @@ export default {
                 uid: user.uid,
                 displayName: user.displayName,
               };
-              db.collection("users").doc(user.uid).set(userData);
+              rtdb.ref("users/" + user.uid).set(userData);
             });
         })
         .catch((err) => {

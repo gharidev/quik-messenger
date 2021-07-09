@@ -37,7 +37,7 @@
   </div>
 </template>
 <script>
-import { db } from "../db";
+import { rtdb } from "../db";
 import { loadStyle, unloadStyle } from "../utils";
 export default {
   name: "Auth",
@@ -63,21 +63,34 @@ export default {
           console.log("Difference", difference);
           if (difference.length == 0) return;
         }
-        db.collection("users")
-          .where("uid", "in", difference)
-          .get()
-          .then((users) => {
-            users.docs.forEach((user) => {
-              chats.forEach((chat) => {
-                if (chat.users.includes(user.data().uid))
-                  this.$store.commit("setChatUsers", {
-                    chatId: chat.id,
-                    userData: user.data(),
-                  });
-              });
-            });
-            console.log("Chat Users", this.$store.state.chatUsers);
+        difference.forEach((uid) => {
+          const userRef = rtdb.ref("users/" + uid);
+          userRef.once("value", (data) => {
+            if (data.exists()) {
+              const chat = chats.find((c) => c.users.includes(uid));
+              if (chat)
+                this.$store.commit("setChatUsers", {
+                  chatId: chat.id,
+                  userData: data.val(),
+                });
+            }
           });
+        });
+        // db.collection("users")
+        //   .where("uid", "in", difference)
+        //   .get()
+        //   .then((users) => {
+        //     users.docs.forEach((user) => {
+        //       chats.forEach((chat) => {
+        //         if (chat.users.includes(user.data().uid))
+        //           this.$store.commit("setChatUsers", {
+        //             chatId: chat.id,
+        //             userData: user.data(),
+        //           });
+        //       });
+        //     });
+        //     console.log("Chat Users", this.$store.state.chatUsers);
+        //   });
       }
     );
     loadStyle(

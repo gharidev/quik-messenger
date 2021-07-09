@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-import { db, Timestamp } from "../db";
+import { db, rtdb, Timestamp } from "../db";
 import { mapGetters } from "vuex";
 export default {
   data() {
@@ -106,11 +106,12 @@ export default {
     },
   },
   created() {
-    db.collection("users")
+    rtdb
+      .ref("users")
       .get()
       .then((data) => {
-        data.docs.forEach((user) => {
-          this.users.push(user.data());
+        data.forEach((user) => {
+          this.users.push(user.val());
         });
       });
   },

@@ -14,16 +14,18 @@
           width="40"
         />
         <div class="chat-title">
-          <p class="mb-1 text-h6">{{ user.displayName }}</p>
-          <span
-            v-if="activityStatus && activityStatus.online != null"
-            class="text-subtitle-2 grey--text"
-            >{{
-              activityStatus.online
-                ? "Online"
-                : getLastSeen(activityStatus.last_changed)
-            }}</span
-          >
+          <p class="mb-0 text-h6">{{ user.displayName }}</p>
+          <v-expand-transition>
+            <span
+              v-if="activityStatus && activityStatus.online != null"
+              class="mt-1 text-subtitle-2 grey--text"
+              >{{
+                activityStatus.online
+                  ? "Online"
+                  : getLastSeen(activityStatus.last_changed)
+              }}</span
+            >
+          </v-expand-transition>
         </div>
         <!-- <v-img
           alt="Vuetify Name"
@@ -168,11 +170,34 @@ export default {
     getLastSeen(timestamp) {
       if (!timestamp) return "";
       const lastSeen = moment(new Date(timestamp));
-      let lastSeenText = 'last seen '
-      if(moment().isSame(lastSeen, 'd')){
-        return lastSeenText+'today at '+lastSeen.format('hh:mm a')
-      }
-      return lastSeenText + lastSeen.fromNow();
+      let lastSeenText = "last seen ";
+      console.log(
+        moment().startOf("week").diff(lastSeen.clone().startOf("week"), "week")
+      );
+      if (moment().isSame(lastSeen, "d"))
+        return lastSeenText + "today at " + lastSeen.format("hh:mm a");
+      if (
+        moment().startOf("day").diff(lastSeen.clone().startOf("day"), "day") ==
+        1
+      )
+        return lastSeenText + "yesterday at " + lastSeen.format("hh:mm a");
+      if (
+        moment()
+          .startOf("week")
+          .diff(lastSeen.clone().startOf("week"), "week") <= 1
+      )
+        return (
+          lastSeenText +
+          lastSeen.format("dddd") +
+          " at " +
+          lastSeen.format("hh:mm a")
+        );
+      if (
+        moment().startOf("month").diff(lastSeen, "month") > 0 &&
+        moment().startOf("year").diff(lastSeen, "year") <= 1
+      )
+        return lastSeenText + " at " + lastSeen.format("DD MMM");
+      else return lastSeenText + " at " + lastSeen.format("DD MMM, YYYY");
     },
   },
   computed: {
@@ -197,6 +222,7 @@ export default {
     user: {
       immediate: true,
       handler(val) {
+        if (!val) return;
         this.$rtdbBind("activityStatus", rtdb.ref("status/" + val.uid));
       },
     },
@@ -228,9 +254,13 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: calc(100vw - 78px);
   p,
   span {
     line-height: 1 !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 .scrollable {

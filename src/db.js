@@ -32,6 +32,10 @@ const { Timestamp, GeoPoint, FieldValue } = firebase.firestore
 export { Timestamp, GeoPoint, FieldValue }
 
 var onlineListener;
+db.enablePersistence({
+    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+}).then(() => console.log('Cache Enabled'));
+
 
 auth.onAuthStateChanged((user) => {
     console.log("Auth state changed", user);
@@ -50,6 +54,14 @@ auth.onAuthStateChanged((user) => {
         }
         store.commit('setUser', null);
         router.push('/login')
-        if(onlineListener) onlineListener.dispose();
+        if (onlineListener) onlineListener.dispose();
     }
 });
+
+// FOR COPYING DATA FROM FIRESTORE TO RTDB
+// db.collection('users').get().then(data => {
+//     data.forEach(u => {
+//         var data = u.data();
+//         rtdb.ref('users/' + data.uid).set(data)
+//     })
+// })

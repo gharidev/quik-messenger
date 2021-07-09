@@ -62,4 +62,11 @@ export default {
 .fixed-appbar-full-body {
   min-height: calc((var(--vh, 1vh) * 100) - 64px);
 }
+body {
+  -webkit-touch-callout: none !important;
+}
+* {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
 </style>
