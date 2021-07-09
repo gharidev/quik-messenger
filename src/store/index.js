@@ -20,13 +20,16 @@ export default new Vuex.Store({
     chats(state) {
       return state.chats;
     },
-    chatUsers(state){
+    chatUsers(state) {
       return state.chatUsers;
     }
   },
   mutations: {
     setUser(state, payload) {
       state.user = payload;
+    },
+    setChatUsers(state, { chatId, userData }) {
+      state.chatUsers = { ...state.chatUsers, [chatId]: userData };
     },
     ...vuexfireMutations
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
+    <!-- <v-app-bar app color="primary" v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -52,29 +52,31 @@ export default {
             (u) => u != this.$store.getters.currentUser.uid
           );
         });
-        let chatUsers = {};
         if (userIds.length == 0) return;
         const prevUserIds = Object.values(this.$store.state.chatUsers).map(
           (u) => u.uid
         );
         console.log("Previous", prevUserIds);
+        var difference = userIds;
         if (prevUserIds.length > 0) {
-          const difference = userIds.filter((u) => !prevUserIds.includes(u));
+          difference = userIds.filter((u) => !prevUserIds.includes(u));
           console.log("Difference", difference);
-          if (difference == 0) return;
+          if (difference.length == 0) return;
         }
         db.collection("users")
-          .where("uid", "in", userIds)
+          .where("uid", "in", difference)
           .get()
           .then((users) => {
             users.docs.forEach((user) => {
               chats.forEach((chat) => {
                 if (chat.users.includes(user.data().uid))
-                  chatUsers[chat.id] = user.data();
+                  this.$store.commit("setChatUsers", {
+                    chatId: chat.id,
+                    userData: user.data(),
+                  });
               });
-              this.$store.state.chatUsers = chatUsers;
             });
-            console.log("Chat Users", chatUsers);
+            console.log("Chat Users", this.$store.state.chatUsers);
           });
       }
     );

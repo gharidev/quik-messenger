@@ -24,13 +24,17 @@ export default {
     },
   },
   created() {
+    const theme = this.$vuetify.theme;
+    const scrollColor = theme.isDark
+      ? theme.themes.dark.primary
+      : theme.themes.light.primary;
     loadStyle(
       `::-webkit-scrollbar-thumb {
-  background: ${this.$vuetify.theme.themes.light.primary};
+  background: ${scrollColor};
   border-radius: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: ${this.$vuetify.theme.themes.light.primary}50;
+  background: ${scrollColor}50;
 }`,
       "custom-scroll-bar"
     );
@@ -48,5 +52,14 @@ export default {
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
+}
+.height-100 {
+  height: calc(var(--vh, 1vh) * 100);
+}
+.min-height-100 {
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+.fixed-appbar-full-body {
+  min-height: calc((var(--vh, 1vh) * 100) - 64px);
 }
 </style>

@@ -1,11 +1,10 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center">
     <v-col cols="12">
       <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
           Get Started!
         </h1> -->
-      <welcome></welcome>
-      <h6 class="text-center font-weight-bold text-h6">Login</h6>
+      <welcome action="signin"></welcome>
     </v-col>
     <v-col cols="12" md="4" class="text-center mb-4">
       <v-text-field
@@ -32,7 +31,6 @@
         @keyup.enter="login"
       ></v-text-field>
       <v-btn
-        color="primary"
         :disabled="$v.$invalid || loading"
         @click="login"
         :loading="loading"
@@ -49,7 +47,7 @@
 <script>
 import { auth } from "../db";
 import { required, minLength, email } from "vuelidate/lib/validators";
-import Welcome from "../components/Auth/Welcome.vue";
+import Welcome from "../components/UnAuth/Welcome.vue";
 export default {
   name: "Login",
   data() {

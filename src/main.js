@@ -2,11 +2,14 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { firestorePlugin } from 'vuefire'
+import { firestorePlugin, rtdbPlugin } from 'vuefire'
 import vuetify from './plugins/vuetify'
 import Vuelidate from 'vuelidate'
+// eslint-disable-next-line no-unused-vars
+
 
 Vue.use(firestorePlugin);
+Vue.use(rtdbPlugin);
 Vue.use(Vuelidate);
 
 Vue.config.productionTip = false

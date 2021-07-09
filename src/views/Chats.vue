@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container fluid class="pa-0">
-      <v-row no-gutters class="primary lighten-4 height-100">
+      <v-row no-gutters class="height-100">
         <v-col
           cols="12"
           sm="4"
@@ -10,7 +10,7 @@
           class="d-sm-block"
           :class="{ 'd-none': $route.name != 'Chats' }"
         >
-          <v-app-bar color="primary" dark elevation="0" tag="div">
+          <v-app-bar elevation="0" tag="div">
             <v-img
               alt="Vuetify Logo"
               class="shrink mr-2"
@@ -47,7 +47,7 @@
             outlined
           >
             <v-list class="pa-0 transparent">
-              <v-list-item-group active-class="border" color="dark">
+              <v-list-item-group active-class="border">
                 <template v-for="(chat, index) in filteredChats">
                   <v-list-item
                     :key="chat.id + index"
@@ -112,7 +112,7 @@
       <!-- <users></users> -->
     </v-container>
     <!-- <v-btn fab color="primary" class="new-chat-fab">
-      <v-icon dark> mdi-plus </v-icon>
+      <v-icon> mdi-plus </v-icon>
     </v-btn> -->
   </v-main>
 </template>
@@ -171,9 +171,6 @@ export default {
 };
 </script>
 <style>
-.height-100 {
-  height: calc(var(--vh, 1vh) * 100);
-}
 .fixed-appbar-scroll-view {
   height: calc((var(--vh, 1vh) * 100) - 64px);
   overflow-y: overlay;

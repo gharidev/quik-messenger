@@ -1,6 +1,6 @@
 <template>
   <div class="height-100">
-    <v-app-bar color="primary" dark tag="div" elevation="0">
+    <v-app-bar tag="div" elevation="0">
       <v-btn icon class="back-button d-sm-none" @click="$router.back()">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
@@ -26,7 +26,7 @@
       color="transparent"
     >
       <v-list class="pa-0" color="transparent">
-        <v-list-item-group active-class="border" color="dark">
+        <v-list-item-group active-class="border">
           <template v-for="user in filteredUsers">
             <v-list-item :key="user.uid" @click="startChat(user)" class="py-1">
               <v-list-item-avatar>

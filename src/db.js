@@ -3,8 +3,10 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
+import 'firebase/database'
 import store from './store'
 import router from './router'
+import { OnlineListener } from './utils/online-activity'
 
 const app = firebase
     .initializeApp({
@@ -14,17 +16,22 @@ const app = firebase
         storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
         messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.VUE_APP_FIREBASE_APP_ID,
-        measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
+        measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID,
+        databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL
     });
 
 export const auth = app.auth()
 
 export const db = app.firestore()
 
+export const rtdb = app.database()
+
 
 // Export types that exists in Firestore - Uncomment if you need them in your app
 const { Timestamp, GeoPoint, FieldValue } = firebase.firestore
 export { Timestamp, GeoPoint, FieldValue }
+
+var onlineListener;
 
 auth.onAuthStateChanged((user) => {
     console.log("Auth state changed", user);
@@ -35,12 +42,14 @@ auth.onAuthStateChanged((user) => {
     if (user) {
         console.log('User Logged in', user);
         store.commit('setUser', user);
-        router.push('/chats')
+        router.push('/chats');
+        onlineListener = new OnlineListener(user);
     } else {
         if (currentUser == null) {
             return;
         }
         store.commit('setUser', null);
         router.push('/login')
+        if(onlineListener) onlineListener.dispose();
     }
 });

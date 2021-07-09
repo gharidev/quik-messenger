@@ -1,11 +1,10 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center">
     <v-col cols="12">
       <!-- <h1 class="display-2 font-weight-bold mb-3 text-center">
           Get Started!
         </h1> -->
-      <welcome></welcome>
-      <h6 class="text-center font-weight-bold text-h6">Register</h6>
+      <welcome action="signup"></welcome>
     </v-col>
     <v-col cols="12" md="4" class="text-center">
       <v-form @submit.prevent="register">
@@ -39,7 +38,6 @@
           @blur="$v.password.$touch()"
         ></v-text-field>
         <v-btn
-          color="primary"
           :disabled="$v.$invalid || loading"
           type="submit"
           :loading="loading"
@@ -57,7 +55,7 @@
 <script>
 import { auth, db } from "../db";
 import { required, minLength, email } from "vuelidate/lib/validators";
-import Welcome from "../components/Auth/Welcome.vue";
+import Welcome from "../components/UnAuth/Welcome.vue";
 export default {
   name: "Register",
   data() {

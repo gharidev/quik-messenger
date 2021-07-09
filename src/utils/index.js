@@ -1,7 +1,4 @@
 export const loadStyle = (css, id) => {
-    if (document.querySelector(`style[id="${id}"]`)) {
-        return;
-    }
     var style =
         document.querySelector(`style[id="${id}"]`) ||
         document.createElement("style");

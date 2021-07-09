@@ -6,7 +6,7 @@
     absolute
     offset-y
   >
-    <v-list dark>
+    <v-list>
       <v-list-item @click="goBack">
         <v-list-item-title>Go Back</v-list-item-title>
       </v-list-item>

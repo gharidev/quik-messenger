@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar app color="primary" dark v-if="$route.name != 'Chat'">
+    <v-app-bar app v-if="$route.name != 'Chat'">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -13,8 +13,8 @@
         <span class="shrink mt-1 text-h6">Quik Messenger</span>
       </div>
     </v-app-bar>
-    <v-main class="primary lighten-4 scroll-container">
-      <v-container>
+    <v-main>
+      <v-container class="fixed-appbar-full-body d-flex align-center">
         <keep-alive>
           <router-view></router-view>
         </keep-alive>
@@ -24,13 +24,21 @@
 </template>
 
 <script>
+import { loadStyle, unloadStyle } from "../utils";
 export default {
   name: "UnAuth",
+  created() {
+    loadStyle(
+      `html{
+  overflow-y: auto;
+}`,
+      "html-overflow"
+    );
+  },
+  destroyed() {
+    unloadStyle("html-overflow");
+  },
 };
 </script>
 <style>
-.scroll-container {
-  height: 100vh;
-  overflow-y: auto;
-}
 </style>

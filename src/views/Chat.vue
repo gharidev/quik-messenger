@@ -1,6 +1,6 @@
 <template>
   <div @contextmenu="onContextMenu">
-    <v-app-bar color="primary" dark tag="div" elevation="0" class="chat-appbar">
+    <v-app-bar tag="div" elevation="0" class="chat-appbar">
       <div class="d-flex align-center" v-if="user">
         <v-btn icon class="back-button d-sm-none" @click="onBackButton">
           <v-icon>mdi-arrow-left</v-icon>
@@ -13,7 +13,18 @@
           transition="fade-transition"
           width="40"
         />
-        <v-app-bar-title shrink-on-scroll>{{ user.displayName }}</v-app-bar-title>
+        <div class="chat-title">
+          <p class="mb-1 text-h6">{{ user.displayName }}</p>
+          <span
+            v-if="activityStatus && activityStatus.online != null"
+            class="text-subtitle-2 grey--text"
+            >{{
+              activityStatus.online
+                ? "Online"
+                : getLastSeen(activityStatus.last_changed)
+            }}</span
+          >
+        </div>
         <!-- <v-img
           alt="Vuetify Name"
           class="shrink mt-1 hidden-sm-and-down"
@@ -46,7 +57,7 @@
         </div>
       </div>
     </div>
-    <div class="chat-input-container primary">
+    <div class="chat-input-container">
       <div class="d-flex align-center py-2 px-3">
         <v-text-field
           type="text"
@@ -55,19 +66,11 @@
           @keyup.enter="sendMessage"
           v-model="message"
           hide-details="auto"
-          dark
-          class="primary lighten-2 white--text"
+          class="white--text"
           ref="chatInput"
           autocomplete="off"
         ></v-text-field>
-        <v-btn
-          fab
-          dark
-          class="mx-4 lighten-4"
-          color="primary"
-          :disabled="!message"
-          @click="sendMessage"
-        >
+        <v-btn fab class="mx-4" :disabled="!message" @click="sendMessage">
           <v-icon>mdi-send</v-icon>
         </v-btn>
         <!-- <v-btn icon class="blue--text emoji-panel" @click="toggleEmojiPanel">
@@ -82,10 +85,11 @@
   </div>
 </template>
 <script>
-import { db, Timestamp, FieldValue } from "../db";
+import { db, Timestamp, FieldValue, rtdb } from "../db";
 import Messages from "../components/Chat/Messages.vue";
 import ContextMenu from "../components/Chat/ContextMenu.vue";
 import { mapGetters } from "vuex";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -96,6 +100,7 @@ export default {
         x: 0,
         y: 0,
       },
+      activityStatus: null,
     };
   },
   components: {
@@ -129,10 +134,9 @@ export default {
         const container = this.$refs.chatContainer;
         if (container.scrollTop == 0) ease = false;
         if (ease)
-          this.$vuetify
-            .goTo(".message:last-child", {
-              container: this.$refs.chatContainer,
-            });
+          this.$vuetify.goTo(".message:last-child", {
+            container: this.$refs.chatContainer,
+          });
         else {
           container.scrollTop = container.scrollHeight;
         }
@@ -161,6 +165,15 @@ export default {
         menu.show = true;
       });
     },
+    getLastSeen(timestamp) {
+      if (!timestamp) return "";
+      const lastSeen = moment(new Date(timestamp));
+      let lastSeenText = 'last seen '
+      if(moment().isSame(lastSeen, 'd')){
+        return lastSeenText+'today at '+lastSeen.format('hh:mm a')
+      }
+      return lastSeenText + lastSeen.fromNow();
+    },
   },
   computed: {
     ...mapGetters(["currentUser"]),
@@ -180,6 +193,16 @@ export default {
       handler() {
         this.scrollToBottom();
       },
+    },
+    user: {
+      immediate: true,
+      handler(val) {
+        this.$rtdbBind("activityStatus", rtdb.ref("status/" + val.uid));
+      },
+    },
+    activityStatus: {
+      immediate: true,
+      handler: console.log,
     },
   },
   mounted() {
@@ -201,6 +224,15 @@ export default {
     }
   }
 }
+.chat-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  p,
+  span {
+    line-height: 1 !important;
+  }
+}
 .scrollable {
   overflow-y: auto;
   height: 90vh;
@@ -215,19 +247,15 @@ export default {
   height: calc(100vh - 10.5rem);
   overflow-y: auto;
   padding: 10px;
-  // background-color: #f2f2f2;
   .username {
     font-size: 18px;
     font-weight: bold;
   }
   .content {
     padding: 2px 8px;
-    // background-color: lightgreen;
     min-width: 10%;
     border-radius: 10px;
     display: inline-block;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-      0 2px 1px -1px rgba(0, 0, 0, 0.12);
     max-width: 50%;
     word-wrap: break-word;
   }

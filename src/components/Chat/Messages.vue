@@ -30,7 +30,7 @@
         </div>
       </template>
       <div style="margin-top: 5px"></div>
-      <v-card elevation="2" class="content" color="primary" dark>
+      <v-card elevation="2" class="content">
         {{ message.content }}
         <div class="text-caption blue-grey--text text-right">
           {{ convertTime(message.created) }}
