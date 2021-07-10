@@ -47,6 +47,9 @@ export default new Vuex.Store({
       dispatch('unbindChats');
       state.chatUsers = {}
       console.log('Chats after unbind', getters.chats);
+    },
+    async deleteChat(_, chat) {
+      await db.collection('chats').doc(chat.id).delete()
     }
   },
   modules: {

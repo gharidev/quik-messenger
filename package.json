@@ -12,6 +12,8 @@
     "firebase": "^8.6.8",
     "moment": "^2.29.1",
     "vue": "^2.6.11",
+    "vue-clipboard2": "^0.3.1",
+    "vue-directive-long-press": "^1.1.0",
     "vue-router": "^3.2.0",
     "vuefire": "^2.2.5",
     "vuelidate": "^0.7.6",

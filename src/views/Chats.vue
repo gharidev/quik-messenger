@@ -31,7 +31,9 @@
               </template>
 
               <v-list>
-                <v-list-item @click="$router.push({ name: 'Users' })">
+                <v-list-item
+                  @click="$router.push({ name: 'Users' }).catch(() => {})"
+                >
                   <v-list-item-title>New Chat</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="logout">
@@ -148,11 +150,7 @@ export default {
         name: "Chat",
         params: { id: chat.id, data: chat },
       };
-      this.$router.push(params);
-      // if (this.$route.name == "Chat") {
-      //   this.$router.replace(params);
-      //   return;
-      // }
+      this.$router.push(params).catch(()=>{});
     },
     async logout() {
       await auth.signOut();

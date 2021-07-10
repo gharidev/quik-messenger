@@ -5,12 +5,17 @@ import store from './store'
 import { firestorePlugin, rtdbPlugin } from 'vuefire'
 import vuetify from './plugins/vuetify'
 import Vuelidate from 'vuelidate'
+import LongPress from 'vue-directive-long-press'
 // eslint-disable-next-line no-unused-vars
+import CustomPrototypes from './utils/custom-prototypes'
+import VueClipboard from 'vue-clipboard2'
 
 
 Vue.use(firestorePlugin);
 Vue.use(rtdbPlugin);
 Vue.use(Vuelidate);
+Vue.use(VueClipboard);
+Vue.directive('long-press', LongPress);
 
 Vue.config.productionTip = false
 

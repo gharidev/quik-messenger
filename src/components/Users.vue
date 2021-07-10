@@ -87,7 +87,6 @@ export default {
     startChat(user) {
       if (user.uid == this.currentUser.uid) return;
       const chat = this.chats.find((c) => c.users.includes(user.uid));
-      console.log("Chat", chat);
       if (!chat) {
         db.collection("chats")
           .add({

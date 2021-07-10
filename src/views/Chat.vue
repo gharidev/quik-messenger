@@ -1,32 +1,59 @@
 <template>
   <div @contextmenu="onContextMenu">
     <v-app-bar tag="div" elevation="0" class="chat-appbar">
-      <div class="d-flex align-center" v-if="user">
+      <div class="d-flex align-center flex-grow-1" v-if="user">
         <v-btn icon class="back-button d-sm-none" @click="onBackButton">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        <v-img
-          :alt="user.displayName"
-          class="shrink mr-2 app-bar-user-pic"
-          contain
-          :src="require('../assets/profile_placeholder.png')"
-          transition="fade-transition"
-          width="40"
-        />
-        <div class="chat-title">
-          <p class="mb-0 text-h6">{{ user.displayName }}</p>
-          <v-expand-transition>
-            <span
-              v-if="activityStatus && activityStatus.online != null"
-              class="mt-1 text-subtitle-2 grey--text"
-              >{{
-                activityStatus.online
-                  ? "Online"
-                  : getLastSeen(activityStatus.last_changed)
-              }}</span
-            >
-          </v-expand-transition>
-        </div>
+        <template v-if="selectedMessages.isEmpty">
+          <v-img
+            :alt="user.displayName"
+            class="shrink mr-2 app-bar-user-pic"
+            contain
+            :src="require('../assets/profile_placeholder.png')"
+            transition="fade-transition"
+            width="40"
+          />
+          <div class="chat-title" :key="chatRoom.id + 'chat-title'">
+            <p class="mb-0 text-h6">{{ user.displayName }}</p>
+            <v-expand-transition>
+              <span
+                v-if="activityStatus && activityStatus.online != null"
+                class="mt-1 text-subtitle-2 grey--text"
+                >{{
+                  activityStatus.online
+                    ? "Online"
+                    : getLastSeen(activityStatus.last_changed)
+                }}</span
+              >
+            </v-expand-transition>
+          </div>
+          <v-spacer></v-spacer>
+          <v-menu left bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" icon>
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <delete-chat-dialog
+                :chat="chatRoom"
+                :user="user"
+              ></delete-chat-dialog>
+            </v-list>
+          </v-menu>
+        </template>
+        <template v-else>
+          <v-btn icon @click="selectedMessages = []"
+            ><v-icon>mdi-close</v-icon></v-btn
+          >
+          <h6 class="mb-0 text-h6">{{ selectedMessages.length }}</h6>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="copyMessage" v-if="selectedMessages.length == 1">
+            <v-icon>mdi-content-copy</v-icon>
+          </v-btn>
+        </template>
         <!-- <v-img
           alt="Vuetify Name"
           class="shrink mt-1 hidden-sm-and-down"
@@ -55,7 +82,13 @@
             height: 'calc((var(--vh, 1vh)*100) - ' + paddingHeight + 'px)',
           }"
         >
-          <messages :room="chatRoom" :user="user" v-if="chatRoom"></messages>
+          <messages
+            :room="chatRoom"
+            :user="user"
+            :selectedMessages="selectedMessages"
+            v-if="chatRoom"
+            @onSelectedMessages="(val) => (selectedMessages = val)"
+          ></messages>
         </div>
       </div>
     </div>
@@ -93,6 +126,7 @@ import ContextMenu from "../components/Chat/ContextMenu.vue";
 import { mapGetters } from "vuex";
 import moment from "moment";
 import { isMobile } from "../utils";
+import DeleteChatDialog from "../components/Chat/DeleteChatDialog.vue";
 export default {
   data() {
     return {
@@ -104,17 +138,18 @@ export default {
         y: 0,
       },
       activityStatus: null,
+      selectedMessages: [],
     };
   },
   components: {
     Messages,
     ContextMenu,
+    DeleteChatDialog,
   },
   methods: {
     sendMessage() {
       let message = this.message;
       if (!message) return;
-      console.log(this.chatRoom);
       db.collection("chats")
         .doc(this.chatRoom.id)
         .update({
@@ -132,14 +167,25 @@ export default {
       });
     },
     onScroll() {},
+    copyMessage() {
+      const message = this.selectedMessages[0];
+      this.$copyText(message.content).then(() => {
+        this.selectedMessages = [];
+      });
+    },
     scrollToBottom(ease = true) {
       this.$nextTick(() => {
         const container = this.$refs.chatContainer;
         if (container.scrollTop == 0) ease = false;
         if (ease)
-          this.$vuetify.goTo(".message:last-child", {
-            container: this.$refs.chatContainer,
-          });
+          this.$vuetify.goTo(
+            document.querySelectorAll(
+              ".v-list.message-list .v-list-item-group div.message"
+            ).last,
+            {
+              container: this.$refs.chatContainer,
+            }
+          );
         else {
           container.scrollTop = container.scrollHeight;
         }
@@ -173,9 +219,6 @@ export default {
       if (!timestamp) return "";
       const lastSeen = moment(new Date(timestamp));
       let lastSeenText = "last seen ";
-      console.log(
-        moment().startOf("week").diff(lastSeen.clone().startOf("week"), "week")
-      );
       if (moment().isSame(lastSeen, "d"))
         return lastSeenText + "today at " + lastSeen.format("hh:mm a");
       if (
@@ -219,6 +262,8 @@ export default {
       immediate: true,
       handler() {
         this.scrollToBottom();
+        if (this.$store.getters.chats.find((c) => c.id == this.chatId) == null)
+          this.$router.replace({ name: "Chats" });
       },
     },
     user: {
@@ -227,10 +272,6 @@ export default {
         if (!val) return;
         this.$rtdbBind("activityStatus", rtdb.ref("status/" + val.uid));
       },
-    },
-    activityStatus: {
-      immediate: true,
-      handler: console.log,
     },
   },
   mounted() {
@@ -265,51 +306,10 @@ export default {
     text-overflow: ellipsis;
   }
 }
-.scrollable {
-  overflow-y: auto;
-  height: 90vh;
-}
 .chat-background {
   position: relative;
   width: 100%;
   background: url(../assets/background.svg) center;
-}
-.chat-container {
-  box-sizing: border-box;
-  height: calc(100vh - 10.5rem);
-  overflow-y: auto;
-  padding: 10px;
-  .username {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  .content {
-    padding: 2px 8px;
-    min-width: 10%;
-    border-radius: 10px;
-    display: inline-block;
-    max-width: 50%;
-    word-wrap: break-word;
-  }
-  .message {
-    margin-bottom: 3px;
-  }
-  .message.own {
-    text-align: right;
-  }
-}
-.chat-input-container {
-  // background-color: white;
-  position: relative;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-}
-@media (max-width: 480px) {
-  .chat-container .content {
-    max-width: 60%;
-    min-width: 20%;
-  }
 }
 .app-bar-user-pic {
   height: 40px;

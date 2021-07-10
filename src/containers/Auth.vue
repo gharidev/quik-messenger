@@ -37,61 +37,15 @@
   </div>
 </template>
 <script>
-import { rtdb } from "../db";
 import { loadStyle, unloadStyle } from "../utils";
+import { chatsWatcher } from "../utils/chats-watcher";
 export default {
   name: "Auth",
   created() {
     this.$store.dispatch("bindChats", this.$store);
     this.unwatch = this.$store.watch(
       (_, getters) => getters.chats,
-      (chats) => {
-        if (!chats) return;
-        const userIds = chats.map((chat) => {
-          return chat.users.find(
-            (u) => u != this.$store.getters.currentUser.uid
-          );
-        });
-        if (userIds.length == 0) return;
-        const prevUserIds = Object.values(this.$store.state.chatUsers).map(
-          (u) => u.uid
-        );
-        console.log("Previous", prevUserIds);
-        var difference = userIds;
-        if (prevUserIds.length > 0) {
-          difference = userIds.filter((u) => !prevUserIds.includes(u));
-          console.log("Difference", difference);
-          if (difference.length == 0) return;
-        }
-        difference.forEach((uid) => {
-          const userRef = rtdb.ref("users/" + uid);
-          userRef.once("value", (data) => {
-            if (data.exists()) {
-              const chat = chats.find((c) => c.users.includes(uid));
-              if (chat)
-                this.$store.commit("setChatUsers", {
-                  chatId: chat.id,
-                  userData: data.val(),
-                });
-            }
-          });
-        });
-        // db.collection("users")
-        //   .where("uid", "in", difference)
-        //   .get()
-        //   .then((users) => {
-        //     users.docs.forEach((user) => {
-        //       chats.forEach((chat) => {
-        //         if (chat.users.includes(user.data().uid))
-        //           this.$store.commit("setChatUsers", {
-        //             chatId: chat.id,
-        //             userData: user.data(),
-        //           });
-        //       });
-        //     });
-        //     console.log("Chat Users", this.$store.state.chatUsers);
-        //   });
-      }
+      chatsWatcher
     );
     loadStyle(
       `html {

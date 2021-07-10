@@ -21,7 +21,7 @@ class OnlineListener {
     }
 
     onConnection(snapshot) {
-        console.log('ConnectionChange', snapshot.val());
+        console.log('Connection Change Detected', snapshot.val());
         if (snapshot.val() == false) {
             return;
         }

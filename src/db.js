@@ -44,7 +44,6 @@ auth.onAuthStateChanged((user) => {
         store.state.authLoading = false;
     }, 100);
     if (user) {
-        console.log('User Logged in', user);
         store.commit('setUser', user);
         router.push('/chats');
         onlineListener = new OnlineListener(user);
