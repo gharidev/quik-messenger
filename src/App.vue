@@ -1,8 +1,9 @@
 <template>
-  <div @contextmenu="(e) => e.preventDefault()">
+  <div
+    @contextmenu="(e) => e.preventDefault()">
     <v-app
       v-touch="{
-        start: onTouch,
+        start: onInteraction,
       }"
     >
       <router-view></router-view>
@@ -26,7 +27,7 @@ export default {
       let vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
     },
-    onTouch(e) {
+    onInteraction(e) {
       if (e && e?.type == "touchstart") {
         this.$store.state.isTouch = true;
       }
