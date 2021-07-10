@@ -151,7 +151,7 @@ export default {
       activityStatus: null,
       selectedMessages: [],
       canSelect: false,
-      chatId: null,
+      chatRoom:null,
     };
   },
   components: {
@@ -264,18 +264,18 @@ export default {
   },
   computed: {
     ...mapGetters(["currentUser"]),
+    chatId(){
+      return this.$route.params.id;
+    },
     user() {
       return this.$store.getters.chatUsers[this.chatId];
-    },
-    chatRoom() {
-      return this.$store.getters.chats.find((c) => c.id == this.chatId);
     },
   },
   watch: {
     $route: {
       immediate: true,
-      handler(val) {
-        this.chatId = val.params.id;
+      handler(route) {
+        this.chatRoom = this.$store.getters.chats.find((c) => c.id == route.params.id);
         this.selectedMessages = [];
         this.canSelect = false;
       },
@@ -284,8 +284,6 @@ export default {
       immediate: true,
       handler() {
         this.scrollToBottom();
-        if (this.$store.getters.chats.find((c) => c.id == this.chatId) == null)
-          this.$router.replace({ name: "Chats" });
       },
     },
     user: {

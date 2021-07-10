@@ -73,7 +73,7 @@ const routes = [
             component: () => import('../views/Chat.vue'),
             meta: {
               requiresUser: true
-            }
+            },
           },
         ]
       },

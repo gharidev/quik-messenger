@@ -32,7 +32,7 @@
 
               <v-list>
                 <v-list-item
-                  @click="$router.push({ name: 'Users' }).catch(() => {})"
+                  @click="$router.push({ name: 'Users' })"
                 >
                   <v-list-item-title>New Chat</v-list-item-title>
                 </v-list-item>
