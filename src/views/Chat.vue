@@ -139,6 +139,7 @@ export default {
       },
       activityStatus: null,
       selectedMessages: [],
+      chatId: null,
     };
   },
   components: {
@@ -250,9 +251,6 @@ export default {
     user() {
       return this.$store.getters.chatUsers[this.chatId];
     },
-    chatId() {
-      return this.$route.params.id;
-    },
     chatRoom() {
       return this.$store.getters.chats.find((c) => c.id == this.chatId);
     },
@@ -271,6 +269,13 @@ export default {
       handler(val) {
         if (!val) return;
         this.$rtdbBind("activityStatus", rtdb.ref("status/" + val.uid));
+      },
+    },
+    $route: {
+      immediate: true,
+      handler(val) {
+        this.chatId = val.params.id;
+        this.selectedMessages = []
       },
     },
   },
