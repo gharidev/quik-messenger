@@ -55,15 +55,14 @@
               >{{ convertTime(message.created, true) }}
             </v-chip>
           </div>
-          <div
+          <long-touch
             :key="message.created + index"
-            v-long-press="500"
             @long-press-start="toggleMessageSelection(message)"
           >
             <v-list-item
               class="message"
               :class="{ own: message.userId == currentUser.uid }"
-              :disabled="selected.isEmpty"
+              :disabled="selected.isEmpty && !canSelect"
               :value="message"
             >
               <template v-if="!room.personal">
@@ -87,7 +86,7 @@
                 </div>
               </v-card>
             </v-list-item>
-          </div>
+          </long-touch>
         </template>
       </v-list-item-group>
     </v-list>
@@ -98,16 +97,18 @@
 import moment from "moment";
 import { VChip } from "vuetify/lib";
 import { mapGetters } from "vuex";
+import LongTouch from "../LongTouch.vue";
 export default {
   data() {
     return {
       selected: [],
     };
   },
-  props: ["room", "user", "selectedMessages"],
+  props: ["room", "user", "selectedMessages", "canSelect"],
   components: {
     // 'chat-image': Image
     VChip,
+    LongTouch,
   },
   computed: {
     username() {

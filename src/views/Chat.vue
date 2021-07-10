@@ -5,7 +5,7 @@
         <v-btn icon class="back-button d-sm-none" @click="onBackButton">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        <template v-if="selectedMessages.isEmpty">
+        <template v-if="selectedMessages.isEmpty && !canSelect">
           <v-img
             :alt="user.displayName"
             class="shrink mr-2 app-bar-user-pic"
@@ -37,6 +37,12 @@
             </template>
 
             <v-list>
+              <v-list-item
+                v-if="!$store.getters.isTouch"
+                @click="canSelect = true"
+              >
+                <v-list-item-title>Select Messages</v-list-item-title>
+              </v-list-item>
               <delete-chat-dialog
                 :chat="chatRoom"
                 :user="user"
@@ -45,7 +51,12 @@
           </v-menu>
         </template>
         <template v-else>
-          <v-btn icon @click="selectedMessages = []"
+          <v-btn
+            icon
+            @click="
+              selectedMessages = [];
+              canSelect = false;
+            "
             ><v-icon>mdi-close</v-icon></v-btn
           >
           <h6 class="mb-0 text-h6">{{ selectedMessages.length }}</h6>
@@ -86,6 +97,7 @@
             :room="chatRoom"
             :user="user"
             :selectedMessages="selectedMessages"
+            :canSelect="canSelect"
             v-if="chatRoom"
             @onSelectedMessages="(val) => (selectedMessages = val)"
           ></messages>
@@ -125,7 +137,6 @@ import Messages from "../components/Chat/Messages.vue";
 import ContextMenu from "../components/Chat/ContextMenu.vue";
 import { mapGetters } from "vuex";
 import moment from "moment";
-import { isMobile } from "../utils";
 import DeleteChatDialog from "../components/Chat/DeleteChatDialog.vue";
 export default {
   data() {
@@ -139,6 +150,7 @@ export default {
       },
       activityStatus: null,
       selectedMessages: [],
+      canSelect: false,
       chatId: null,
     };
   },
@@ -148,6 +160,9 @@ export default {
     DeleteChatDialog,
   },
   methods: {
+    showEvent(e) {
+      console.log(e);
+    },
     sendMessage() {
       let message = this.message;
       if (!message) return;
@@ -172,6 +187,7 @@ export default {
       const message = this.selectedMessages[0];
       this.$copyText(message.content).then(() => {
         this.selectedMessages = [];
+        this.canSelect = false;
       });
     },
     scrollToBottom(ease = true) {
@@ -207,7 +223,7 @@ export default {
     },
     onContextMenu(e) {
       e.preventDefault();
-      if (isMobile()) return;
+      if (this.$store.getters.isTouch) return;
       const menu = this.contextMenu;
       menu.show = false;
       menu.x = e.clientX;
@@ -256,6 +272,14 @@ export default {
     },
   },
   watch: {
+    $route: {
+      immediate: true,
+      handler(val) {
+        this.chatId = val.params.id;
+        this.selectedMessages = [];
+        this.canSelect = false;
+      },
+    },
     chatRoom: {
       immediate: true,
       handler() {
@@ -269,13 +293,6 @@ export default {
       handler(val) {
         if (!val) return;
         this.$rtdbBind("activityStatus", rtdb.ref("status/" + val.uid));
-      },
-    },
-    $route: {
-      immediate: true,
-      handler(val) {
-        this.chatId = val.params.id;
-        this.selectedMessages = []
       },
     },
   },

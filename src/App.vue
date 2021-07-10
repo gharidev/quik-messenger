@@ -1,6 +1,10 @@
 <template>
   <div @contextmenu="(e) => e.preventDefault()">
-    <v-app>
+    <v-app
+      v-touch="{
+        start: onTouch,
+      }"
+    >
       <router-view></router-view>
       <v-fade-transition>
         <loader v-if="$store.state.authLoading"></loader>
@@ -21,6 +25,11 @@ export default {
     setCssHeightVar() {
       let vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
+    },
+    onTouch(e) {
+      if (e && e?.type == "touchstart") {
+        this.$store.state.isTouch = true;
+      }
     },
   },
   created() {

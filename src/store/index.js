@@ -11,7 +11,8 @@ export default new Vuex.Store({
     user: null,
     authLoading: true,
     chats: [],
-    chatUsers: {}
+    chatUsers: {},
+    isTouch: false
   },
   getters: {
     currentUser(state) {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     chatUsers(state) {
       return state.chatUsers;
+    },
+    isTouch(state) {
+      return state.isTouch;
     }
   },
   mutations: {
