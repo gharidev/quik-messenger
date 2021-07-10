@@ -20,14 +20,12 @@ class OnlineListener {
         this.connectionListener = this.connectionRef.on('value', this.onConnection);
     }
 
-    setUserOnline(e) {
+    setUserOnline() {
         that.userStatusDatabaseRef.set(isOnlineForDatabase);
-        console.log(e);
     }
 
-    setUserOffline(e) {
+    setUserOffline() {
         that.userStatusDatabaseRef.set(isOfflineForDatabase);
-        console.log(e);
     }
 
     onConnection(snapshot) {

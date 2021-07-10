@@ -151,7 +151,6 @@ export default {
       activityStatus: null,
       selectedMessages: [],
       canSelect: false,
-      chatRoom:null,
     };
   },
   components: {
@@ -270,17 +269,19 @@ export default {
     user() {
       return this.$store.getters.chatUsers[this.chatId];
     },
+    chatRoom(){
+      return this.$store.getters.chats.find((c) => c.id == this.$route.params.id)
+    }
   },
   watch: {
     $route: {
       immediate: true,
-      handler(route) {
-        this.chatRoom = this.$store.getters.chats.find((c) => c.id == route.params.id);
+      handler() {
         this.selectedMessages = [];
         this.canSelect = false;
       },
     },
-    chatRoom: {
+    'chatRoom.messages': {
       immediate: true,
       handler() {
         this.scrollToBottom();
