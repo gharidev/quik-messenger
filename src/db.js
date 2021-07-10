@@ -52,8 +52,8 @@ auth.onAuthStateChanged((user) => {
         if (currentUser == null) {
             return;
         }
-        store.commit('setUser', null);
-        router.push('/login')
+        store.dispatch('logout');
+        router.push('/login');
         if (onlineListener) onlineListener.dispose();
     }
 });

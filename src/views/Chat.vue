@@ -92,6 +92,7 @@ import Messages from "../components/Chat/Messages.vue";
 import ContextMenu from "../components/Chat/ContextMenu.vue";
 import { mapGetters } from "vuex";
 import moment from "moment";
+import { isMobile } from "../utils";
 export default {
   data() {
     return {
@@ -159,6 +160,7 @@ export default {
     },
     onContextMenu(e) {
       e.preventDefault();
+      if (isMobile()) return;
       const menu = this.contextMenu;
       menu.show = false;
       menu.x = e.clientX;

@@ -41,7 +41,13 @@ export default new Vuex.Store({
     }),
     unbindChats: firestoreAction(({ unbindFirestoreRef }) => {
       unbindFirestoreRef("chats")
-    })
+    }),
+    logout({ dispatch, commit, getters, state }) {
+      commit('setUser', null);
+      dispatch('unbindChats');
+      state.chatUsers = {}
+      console.log('Chats after unbind', getters.chats);
+    }
   },
   modules: {
   }
